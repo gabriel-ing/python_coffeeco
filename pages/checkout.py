@@ -37,7 +37,7 @@ else:
 
     st.header("Total")
     # Example total row
-    total_row = pd.DataFrame([["Total", f"{total_quantity} items", f"$ {total-0.2*total}", f"$ {0.2*total}",  f"$ {total.round(2)}"]],
+    total_row = pd.DataFrame([["Total", f"{total_quantity} items", f"$ {(total-0.2*total).round(2)}", f"$ {(0.2*total).round(2)}",  f"$ {total.round(2)}"]],
                             columns=["Item", "Quantity", "Subtotal", "Tax","Total"])
 
     # Use style to format

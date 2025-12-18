@@ -59,7 +59,6 @@ The application connects to an instance of InterSystems IRIS for the back-end da
 - Streamlit is designed to be easy to use, but does come with a trade-off of limited customisability. This isn't the greatest use case for the framework. The good news is, the connection to IRIS can be used in a similar way with Flask, Django or Reflex. 
 
 - Security is not considered in this application. Before production, one should:
-
     - Create Roles-based access to SQL tables in IRIS 
     - Change IRIS credentials and hide them as environmental variables
     - Change the admin password from "1234" (note this is also hardcoded in the streamlit code).
@@ -71,7 +70,7 @@ The application connects to an instance of InterSystems IRIS for the back-end da
 
 # Guide
 
-## Step 1: Creating a data table
+## Creating a data table
 
 We are connecting to the running InterSystems IRIS instance with the DB-API. This allows us to run SQL commands and queries.
 
@@ -140,7 +139,9 @@ You will see a table showing the inventory, and we can see theres only a single 
 
 You should see a preview of the file pop up, check that it looks ok, then click `Add To Database`
 
-And bam - we've added the order to the stock. 
+And bam - we've added the order to the stock.
+
+![alt text](images/manage-stock.png)
 
 ### Under the hood 
 
@@ -183,6 +184,10 @@ def add_to_database(df):
 
 We can now see our products in the shop!
 
+
+![alt text](images/products.png)
+
+
 Try adding something to the basket, feel free to change the quantities.
 
 ### Under the hood
@@ -199,6 +204,7 @@ cursor.execute("SELECT ID from coffeeco.Inventory")
 ids = cursor.fetchall()
 ids = [x[0] for x in ids] 
 ```
+
 We then iterate over the IDs and fetch each one as an object: 
 
 ```python
@@ -240,6 +246,9 @@ Now lets take a look at the checkout. This is a dummy application, so lets ignor
 We should see all the items we added to the basked before, with a total calculated. Make a note of which items you added to the basket.
 
 Hit Pay Now! and see what happens.
+
+![alt text](images/checkout.png)
+
 
 You're redirect to an order confirmation page! Great.
 
