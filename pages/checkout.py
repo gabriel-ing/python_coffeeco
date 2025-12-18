@@ -60,7 +60,7 @@ else:
             item = irispy.classMethodObject("coffeeco.Inventory", "%OpenId", id)
 
             if not item:
-                st.switch_page("pages/error.py")
+                st.switch_page("pages/hidden/error.py")
                 break
 
             if st.session_state.basket[id]["Quantity"] == item.get("StockQuantity"):
@@ -71,4 +71,4 @@ else:
                 item.invokeVoid("%Save")
 
         st.session_state.basket = {}
-        st.switch_page( "pages/thanks.py")
+        st.switch_page( "pages/hidden/thanks.py")
