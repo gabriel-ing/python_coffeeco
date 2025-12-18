@@ -31,16 +31,14 @@ else:
     st.header("Items")
     table = st.table(basket)
 
-
-
-
+    # Add slight delay for calculating 
     time.sleep(0.5)
 
 
     st.header("Total")
     # Example total row
-    total_row = pd.DataFrame([["Total", "", f"{total_quantity} items", f"$ {total.round(2)}"]],
-                            columns=["Item", "Price", "Quantity", "Subtotal"])
+    total_row = pd.DataFrame([["Total", f"{total_quantity} items", f"$ {total-0.2*total}", f"$ {0.2*total}",  f"$ {total.round(2)}"]],
+                            columns=["Item", "Quantity", "Subtotal", "Tax","Total"])
 
     # Use style to format
     styled_total = total_row.style.set_properties(**{

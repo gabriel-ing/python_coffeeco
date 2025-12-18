@@ -2,7 +2,8 @@
 
 ## Installation
 
-To try the demo application, run 
+To try the demo application, run
+
 ```sh
 git clone https://github.com/gabriel-ing/python_coffeeco.git
 cd python_coffeeco
@@ -25,13 +26,13 @@ This project connects to an instance of InterSystems IRIS running on superserver
     docker-compose up -d
     ```
 
-This is a UV python project, so if you don't have it installed, install it. Then: 
+This is a UV python project, so if you don't have it installed, install it. Then:
 
 ```sh
 uv sync
 ```
 
-Then: 
+Then:
 
 1. Create the data table
 
@@ -47,9 +48,28 @@ uv run streamlit run main.py
 
 3. View the application at http://localhost:8051
 
+## Overview
+
+This is a dummy online shop for a fictional coffee company, Python CoffeeCo. The front end is built with [streamlit](https://streamlit.io/), a pure Python framework for creating elegant front-ends with very simple python code.
+
+The application connects to an instance of InterSystems IRIS for the back-end database. Both relational and native object connections are demonstrated. 
+
+### Caveats
+
+- Streamlit is designed to be easy to use, but does come with a trade-off of limited customisability. This isn't the greatest use case for the framework. The good news is, the connection to IRIS can be used in a similar way with Flask, Django or Reflex. 
+
+- Security is not considered in this application. Before production, one should:
+
+    - Create Roles-based access to SQL tables in IRIS 
+    - Change IRIS credentials and hide them as environmental variables
+    - Change the admin password from "1234" (note this is also hardcoded in the streamlit code).
+
+- No user or payment details are collected.
+
+> [!WARNING]
+> This is a demo, not a production application!
 
 # Guide
-
 
 ## Step 1: Creating a data table
 

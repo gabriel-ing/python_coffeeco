@@ -12,14 +12,15 @@ def main():
                             st.Page("pages/stock_management.py", title="Manage databases"),
                             st.Page("pages/hidden/error.py", title="Error"),
                             st.Page("pages/hidden/thanks.py", title="thanks"),
-                            st.Page("pages/hidden/playground.py", title="Test-playground")]    
+                            #st.Page("pages/hidden/playground.py", title="Test-playground")
+                            
+                            ]    
 
 
 
     pg = st.navigation(pages, position="hidden")
-    # hidden = st.navigation(hidden_pages, position="hidden")
     pg.run()
-    # hidden.run()
+  
     st.sidebar.header("Python CoffeeCo")
     st.sidebar.page_link("pages/homepage.py", label="Home")
     st.sidebar.page_link("pages/products.py", label="Shop")
@@ -28,7 +29,7 @@ def main():
     st.sidebar.header("Administration")
     st.sidebar.page_link("pages/stock_management.py", label="Manage Stock")
     
-    st.sidebar.page_link("pages/hidden/playground.py", label="dev")
+    #st.sidebar.page_link("pages/hidden/playground.py", label="dev")
 
 
 if __name__ == "__main__":

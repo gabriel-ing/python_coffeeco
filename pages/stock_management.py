@@ -15,7 +15,7 @@ def login_form():
     st.title("Login")
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
-    login_btn = st.button("Log in")
+    login_btn = st.button("Log in", shortcut="Enter")
 
     if login_btn:
         if username == DUMMY_USERNAME and password == DUMMY_PASSWORD:

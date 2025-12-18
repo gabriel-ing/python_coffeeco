@@ -2,29 +2,38 @@ import iris
 import streamlit as st
 
 
+st.page_link("pages/checkout.py",label="Checkout", width="stretch")
 
+## Intialise basket
 if "basket" not in st.session_state:
-    st.session_state.basket = {}  # {product_id: {"name": str, "qty": int, "price": float}}
+    st.session_state.basket = {}  # {product_id: {"Name": str, "Quantity": int, "Price": float}}
 
 
 def add_to_basket(id:int, name:str,price: float, quantity:int):
+    """
+    Function to handle adding an order to basket. 
+    """
+
+    # Checks if its already in basket - if so, update quantity
     if id in st.session_state.basket:
-        st.session_state.basket[id]["quantity"]+=quantity
+        st.session_state.basket[id]["Quantity"]+=quantity
+
+    ## otherwise adds it to basket
     else:
         st.session_state.basket[id] = {"Name": name, "Price":price, "Quantity":quantity }
 
+    ## prints current basket to terminal (debugging)
     print(st.session_state.basket)
 
+    ## Resets quantity input and maximum quantity that can be purchased
+    st.session_state[f"input{id}"] = 0
+    st.session_state[f"max_qty{id}"] -= quantity
 
-conn = iris.connect("localhost", 1972, "USER", "SuperUser", "SYS")
-cursor = conn.cursor() 
+    ## Creates a toast pop-up to confirm added to basket
+    st.toast('Added to Basket', icon="🧺")
 
-cursor.execute("SELECT ID from coffeeco.Inventory")
-ids = cursor.fetchall()
-ids = [x[0] for x in ids] 
-irispy = iris.createIRIS(conn)
 
-# Define custom CSS for the container
+# Define custom CSS for the container (formatting)
 st.markdown(
 """
 <style>
@@ -38,71 +47,73 @@ background-color: #99fffa; /* Light blue */
 border: 2px solid #00B2A9; /* Steel blue border */
 }
 
-.custom-container div[data-testid="stContainer"] {
-color:black;
-border-radius: 10px;
-overflow: scroll;
-padding:5px;
-margin: 10px 0px;
-height: 300px;
-width: 230px;
-}
+
 </style>
 """,
 unsafe_allow_html=True,
 )
 
 
+## ****************************** IRIS Connection *****************
+## IRIS connection
+conn = iris.connect("localhost", 1972, "USER", "SuperUser", "SYS")
+cursor = conn.cursor() 
+
+## Fetch IDs in our dataset
+cursor.execute("SELECT ID from coffeeco.Inventory")
+ids = cursor.fetchall()
+ids = [x[0] for x in ids] 
+cursor.close()
+
+## Create IRIS native connection
+irispy = iris.createIRIS(conn)
+
+## *****************************************************************
 
 
+## Creates Columns
 cols = st.columns(3, gap="small", border=False)
 
-def write_column(i, id, item):
-    col = i % 3
-    container_class = "odd" if ((col) %2) else "even"
+
+def write_product_tile(i, id, item):
+    """
+    Handle adding tile for each item
+    """
+    col = (i % 3) - 1
+    container_class = "odd" if (i %2) else "even"
 
     with cols[col]:
-        st.markdown(f'<div class="custom-container {container_class}">', unsafe_allow_html=True)
+
+        ## Adds a mini html container for design (bg colour)
+        st.markdown(f'<div class="{container_class}">', unsafe_allow_html=True)
 
         with st.container(height=500):
 
             ## Retrieve product name
             st.header(item.get("Name"))
 
-            ## Retrieve other product items
+            ## Write other product properties
             st.subheader(f"Origin: {item.get("CountryOfOrigin")}")
             st.write(item.get("Description"))
             st.write(f"Price: {item.get("Price")}")
             
-            try:
-                ## Create a value for the quantity to add to basket
-                ## Note the max value is the current quantity
-                quantity = st.number_input("Quantity: ", value=1, max_value=item.get("StockQuantity"), key=f"input{id}")
-            except Exception as e:
-                print(e)
+            
+            ## Set a trackable state for the max quantity
+            ## so it can be dynamically updated with the basket
+            if f"max_qty{id}" not in st.session_state:
+                st.session_state[f"max_qty{id}"] = item.get("StockQuantity")
+
+            
+             ## Create an input for the quantity to add to basket
+            quantity = st.number_input("Quantity: ",max_value=st.session_state[f"max_qty{id}"], key=f"input{id}")
+
             
             ## Add a button to handle adding to the basket
-            if st.button("Add To Basket", key=id):
-                ## Call add to basket function 
-                add_to_basket(id, item.get("Name"), item.get("Price"), quantity)
-                st.toast('Added to Basket', icon="🧺")
+            st.button("Add To Basket", key=id,
+                       on_click=lambda:\
+                        add_to_basket(id, item.get("Name"), item.get("Price"), quantity))
                 
 
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# def write_column2(i, item):
-#     with cols[i % 3]:
-
-#         container_class = "odd" if i%2 else "even"
-
-#         st.markdown(f"""
-#         <div class= "custom-container {container_class}" >
-#             <h3>{item.get("Name")}</h1>
-#             <h4>Origin: {item.get("CountryOfOrigin")}</h2>
-#             <p>{item.get("Description")}</p>
-#             <h4> Price: {item.get("Price")}</h3>
-#         <div>
-#         """, unsafe_allow_html=True)
 
 i = 1
 ## Iterate over product IDs
@@ -110,9 +121,8 @@ for id in ids:
     try:
         ## Open the object by ID
         item = irispy.classMethodObject("coffeeco.Inventory", "%OpenId", id)
-
         ## Write the column for the product number, ID and Object 
-        write_column(i,id, item)
+        write_product_tile(i,id, item)
         i+=1
     except Exception as e: 
         break
