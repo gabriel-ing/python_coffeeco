@@ -13,4 +13,4 @@ wheels/
 .streamlit
 .DockerfilePython
 .python_entrypoint.sh
-settings.json
+.vscode
