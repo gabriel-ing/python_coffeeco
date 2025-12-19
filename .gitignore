@@ -11,6 +11,6 @@ wheels/
 
 
 .streamlit
-.DockerfilePython
-.python_entrypoint.sh
+DockerfilePython
+python_entrypoint.sh
 .vscode

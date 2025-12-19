@@ -1,7 +1,5 @@
-
 import streamlit as st
 import pandas as pd
-
 
 st.title("Welcome To PythonCoffeeCo! ")
 st.header("The only Independent Coffee Roasters On Snake Island")
