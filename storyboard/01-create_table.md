@@ -20,7 +20,7 @@ Now, in this interactive shell, we can create a connection to InterSystems IRIS.
 import iris
 
 server = "iris" # IRIS container running on the local network 
-port = 1972 # Binary superserver connection port
+port = 1972 # Superserver connection port
 namespace = "USER" # Default namespace
 username = "SuperUser" # Default Username
 password = "SYS" # Default Password
@@ -49,6 +49,7 @@ The terminal should print 2. Great! Now lets create a table for our Inventory. R
 ```nocopy,run,line-numbers
 # SQL query to create a table 
 create_table_query  = """CREATE TABLE coffeeco.Inventory ( 
+    ProductId Integer NOT NULL PRIMARY KEY,
     Name VARCHAR(50), 
     Price DOUBLE, 
     StockQuantity Integer,
@@ -66,11 +67,11 @@ Finally, lets add a single row of data. Here we will define an insert query, wit
 ```nocopy,run,line-numbers
 # Insert query
 insert_query = """INSERT INTO coffeeco.Inventory 
-                (Name, Price, StockQuantity, CountryOfOrigin, Description)
-                VALUES (?, ?, ?, ?, ? )""" # ? Is a placeholder for a value passed at runtime
+                (ProductId, Name, Price, StockQuantity, CountryOfOrigin, Description)
+                VALUES (?, ?, ?, ?, ?, ? )""" # ? Is a placeholder for a value passed at runtime
 
 # List of values to insert
-values = [
+values = [1001, 
         "Colombian Supremo", # Name  
         12.50, # Price
         5, # Stock Quantity
@@ -82,7 +83,7 @@ values = [
 cursor.execute(insert_query, values) ## Values for ? placeholders passed in as a list
 ```
 
-Great, lets just double check it has been added: 
+Great, lets just double check it has been added:
 
 ```nocopy,run,line-numbers
 # Execute SELECT query

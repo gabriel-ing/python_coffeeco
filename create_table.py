@@ -19,6 +19,7 @@ cursor.execute("DROP TABLE IF EXISTS coffeeco.Inventory ")
 
 ## SQL query to create a table 
 create_table_query  = """CREATE TABLE coffeeco.Inventory ( 
+    ProductId Integer NOT NULL PRIMARY KEY,
     Name VARCHAR(50), 
     Price DOUBLE, 
     StockQuantity Integer,
@@ -31,11 +32,11 @@ cursor.execute(create_table_query)
 
 ## Insert query
 insert_query = """INSERT INTO coffeeco.Inventory 
-                (Name, Price, StockQuantity, CountryOfOrigin, Description)
-                VALUES (?, ?, ?, ?, ? )""" ## ? Is a placeholder for a value passed at runtime
+                (ProductId, Name, Price, StockQuantity, CountryOfOrigin, Description)
+                VALUES (?, ?, ?, ?, ?, ? )""" ## ? Is a placeholder for a value passed at runtime
 
 ## List of values to insert
-values = ["Colombian Supremo", 12.50, 5, "Colombia","Smooth and balanced with notes of chocolate and caramel."]
+values = [1001, "Colombian Supremo", 12.50, 5, "Colombia","Smooth and balanced with notes of chocolate and caramel."]
 
 ## Execute insertion
 cursor.execute(insert_query, values) ## Values for ? placeholders passed in as a list

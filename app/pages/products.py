@@ -9,6 +9,45 @@ if "basket" not in st.session_state:
     st.session_state.basket = {}  # {product_id: {"Name": str, "Quantity": int, "Price": float}}
 
 
+def write_product_tile(i, id, item):
+    """
+    Handle adding tile for each item
+    """
+    col = (i % 3) - 1
+    container_class = "odd" if (i %2) else "even"
+
+    with cols[col]:
+
+        ## Adds a mini html container for design (adds a strip of color)
+        st.html(f'<div class="{container_class}">')
+
+        with st.container(height=550):
+
+            ## Retrieve product name
+            st.header(item.get("Name"))
+
+            ## Write other product properties
+            st.subheader(f"Origin: {item.get("CountryOfOrigin")}")
+            st.write(item.get("Description"))
+            st.subheader(f"$ {item.get("Price")}")
+            
+            
+            ## Set a trackable state for the max quantity
+            ## so it can be dynamically updated with the basket
+            if f"max_qty{id}" not in st.session_state:
+                st.session_state[f"max_qty{id}"] = item.get("StockQuantity")
+
+            
+             ## Create an input for the quantity to add to basket
+            quantity = st.number_input("Quantity: ",max_value=st.session_state[f"max_qty{id}"], key=f"input{id}")
+
+            
+            ## Add a button to handle adding to the basket
+            st.button("Add To Basket", key=id,
+                       on_click=lambda:\
+                        add_to_basket(id, item.get("Name"), item.get("Price"), quantity))
+                
+
 def add_to_basket(id:int, name:str,price: float, quantity:int):
     """
     Function to handle adding an order to basket. 
@@ -34,7 +73,7 @@ def add_to_basket(id:int, name:str,price: float, quantity:int):
 
 
 # Define custom CSS for the container (formatting)
-st.markdown(
+st.html(
 """
 <style>
 
@@ -49,12 +88,12 @@ border: 2px solid #00B2A9; /* Steel blue border */
 
 
 </style>
-""",
-unsafe_allow_html=True,
+"""
 )
 
 
 ## ****************************** IRIS Connection *****************
+
 ## IRIS connection
 conn = iris.connect("localhost", 1972, "USER", "SuperUser", "SYS")
 cursor = conn.cursor() 
@@ -62,57 +101,16 @@ cursor = conn.cursor()
 ## Fetch IDs in our dataset
 cursor.execute("SELECT ID from coffeeco.Inventory")
 ids = cursor.fetchall()
-ids = [x[0] for x in ids] 
+ids = [x[0] for x in ids]
+print(ids, "Ids") 
 cursor.close()
 
 ## Create IRIS native connection
 irispy = iris.createIRIS(conn)
 
-## *****************************************************************
-
 
 ## Creates Columns
 cols = st.columns(3, gap="small", border=False)
-
-
-def write_product_tile(i, id, item):
-    """
-    Handle adding tile for each item
-    """
-    col = (i % 3) - 1
-    container_class = "odd" if (i %2) else "even"
-
-    with cols[col]:
-
-        ## Adds a mini html container for design (bg colour)
-        st.markdown(f'<div class="{container_class}">', unsafe_allow_html=True)
-
-        with st.container(height=500):
-
-            ## Retrieve product name
-            st.header(item.get("Name"))
-
-            ## Write other product properties
-            st.subheader(f"Origin: {item.get("CountryOfOrigin")}")
-            st.write(item.get("Description"))
-            st.write(f"Price: {item.get("Price")}")
-            
-            
-            ## Set a trackable state for the max quantity
-            ## so it can be dynamically updated with the basket
-            if f"max_qty{id}" not in st.session_state:
-                st.session_state[f"max_qty{id}"] = item.get("StockQuantity")
-
-            
-             ## Create an input for the quantity to add to basket
-            quantity = st.number_input("Quantity: ",max_value=st.session_state[f"max_qty{id}"], key=f"input{id}")
-
-            
-            ## Add a button to handle adding to the basket
-            st.button("Add To Basket", key=id,
-                       on_click=lambda:\
-                        add_to_basket(id, item.get("Name"), item.get("Price"), quantity))
-                
 
 
 i = 1
@@ -125,6 +123,7 @@ for id in ids:
         write_product_tile(i,id, item)
         i+=1
     except Exception as e: 
+        print(e)
         break
 
 

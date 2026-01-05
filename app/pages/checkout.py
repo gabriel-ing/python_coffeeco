@@ -31,9 +31,8 @@ else:
     st.header("Items")
     table = st.table(basket)
 
-    # Add slight delay for calculating 
+    # Add slight delay for calculating... unneccessary but looks satisfying
     time.sleep(0.5)
-
 
     st.header("Total")
     # Example total row
