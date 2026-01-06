@@ -14,18 +14,21 @@ connection  = iris.connect(server, port, namespace, username, password)
 cursor = connection.cursor() 
 
 ## Drop table if it exists 
-cursor.execute("DROP TABLE IF EXISTS coffeeco.Inventory ")
+cursor.execute("DROP TABLE IF EXISTS coffeeco.Inventory")
 
 
 ## SQL query to create a table 
 create_table_query  = """CREATE TABLE coffeeco.Inventory ( 
-    ProductId Integer NOT NULL PRIMARY KEY,
+    ProductId Integer NOT NULL UNIQUE PRIMARY KEY,
     Name VARCHAR(50), 
     Price DOUBLE, 
     StockQuantity Integer,
     CountryOfOrigin VARCHAR(50), 
     Description VARCHAR(500) 
     )"""
+
+# Ensure the primary key is the ID key (so the product ID is the same as the row ID)
+cursor.execute("SET OPTION PKEY_IS_IDKEY = TRUE")
 
 ## Execute create table query
 cursor.execute(create_table_query)

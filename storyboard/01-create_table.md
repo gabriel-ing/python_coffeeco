@@ -33,7 +33,7 @@ connection = iris.connect(server, port, namespace, username, password)
 
 We then can create a cursor object, which can execute commands using the `.execute()` method.
 
-```nocopy, run, line-numbers
+```nocopy,run, line-numbers
 cursor = connection.cursor()
 
 # Test a simple SQL queries

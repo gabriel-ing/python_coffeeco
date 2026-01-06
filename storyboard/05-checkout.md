@@ -22,11 +22,16 @@ You'll see the foloowing
     if st.button("Pay Now!"):
         for id in st.session_state.basket:
             pass
+            # Call the function to update the database
+            # update_database(id)
+
 ```
 
 Right - we must have forgotten to implement the rest of the button's functionality. Lets sort this now. 
 
 So far, when we pay we iterate over the products in the basket by ID. We want to update the database for each product being sold. Lets use an IRIS native connection and the Object model for this. We've actually already created the connection above:
+
+First of all, lets delete the `pass` command, and uncomment the `update_database(id)` line.
 
 ```python, nocopy
     connection = iris.connect("localhost", 1972, "USER", "SuperUser", "SYS")
@@ -44,31 +49,37 @@ So to proceed, we need to:
 So, to start with, lets open the product as an object using `irispy.classMethodObject()`. Add this line into the `for` loop on line 57.
 
 ```python
-                item = irispy.classMethodObject("coffeeco.Inventory", "%OpenId", id)
+    item = irispy.classMethodObject("coffeeco.Inventory", "%OpenId", id)
 ```
 
 Now we have our item, we need to check if the basket quantity equals the stock quantity, again add this to the for loop.
 
 ```python
- if st.session_state.basket[id]["Quantity"] == item.get("StockQuantity"):
-                status = irispy.classMethodString("coffeeco.Alerts", "OutOfStockAlert", id, item.get("Name"))
-                print(status)
-                irispy.classMethodVoid("coffeeco.Inventory", "%DeleteId", id)
+if st.session_state.basket[id]["Quantity"] == item.get("StockQuantity"):
+        # Send internal alert from the server using pre-written method
+        status = irispy.classMethodString("coffeeco.Alerts", "OutOfStockAlert", id, item.get("Name"))
+                
+        # Delete the item from the database
+        irispy.classMethodVoid("coffeeco.Inventory", "%DeleteId", id)
 ```
 
 Here we use the `irispy` connection to send a pre-configured alert from the server, using the class method `coffeeco.Alerts.OutOfStockAlert`. We won't look further into this, but it demonstrates how we can use internal methods from this external connection.
 
-Now lets write the logic to update the database:
+Now lets write the logic to update the database in the `else` block.
 
 ```python
-            else:
-                new_quantity = item.get("StockQuantity") - st.session_state.basket[id]["Quantity"]
+        # Calculate the new quantity in stock
+        new_quantity = item.get("StockQuantity") - st.session_state.basket[id]["Quantity"]
                 
-                if new_quantity<3:
-                    status = irispy.classMethodString("coffeeco.alerts", "LowStockAlert", id, item.get("Name"))
+        # Send alert if stock is low
+        if new_quantity<3:
+            status = irispy.classMethodString("coffeeco.alerts", "LowStockAlert", id, item.get("Name"))
                 
-                item.set("StockQuantity", new_quantity) 
-                item.invokeVoid("%Save")
+        # Update the quantity in stock
+        item.set("StockQuantity", new_quantity) 
+                
+        # Save the item
+        item.invokeVoid("%Save")
 ```
 
 Here we use the object method for setting a property, `item.set(<property>, <value>)`. We then use `.invokeVoid()` to invoke an object method - in this case the `%Save` method. This saves the changes to the product to the database.

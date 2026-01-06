@@ -99,7 +99,7 @@ conn = iris.connect("localhost", 1972, "USER", "SuperUser", "SYS")
 cursor = conn.cursor() 
 
 ## Fetch IDs in our dataset
-cursor.execute("SELECT ID from coffeeco.Inventory")
+cursor.execute("SELECT ProductId from coffeeco.Inventory")
 ids = cursor.fetchall()
 ids = [x[0] for x in ids]
 cursor.close()

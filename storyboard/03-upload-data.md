@@ -6,11 +6,11 @@ In this step, we are going to create a method to upload new products into the da
 
 This process is also going to take place in the Manage Stock page, so again we are using the stock_management.py file
 
-## File Uploader widget
+## Uploading a csv file
 
 The first step is to create a file uploader widget which can take a csv file. Then, upon upload we want to create an editable preview of the file, and a button to add the dataframe to the database.
 
-As we are running on a sandbox environment, uploading a file isn't ideal, so instead we are going to paste in the csv file into a text box. However, logic for using a file upload is shown in the stock_management.py file (commented out) for reference. To create the text box upload, paste the following code block to the end of the file: 
+As we are running on a sandbox environment, uploading a file isn't ideal, so instead we are going to paste in the csv file into a text box. However, logic for using a file upload is shown in the stock_management.py file (commented out) for reference. To create the text box upload, paste the following code block to the end of the file:
 
 ```python
     # Create text box to paste in csv data
@@ -18,6 +18,7 @@ As we are running on a sandbox environment, uploading a file isn't ideal, so ins
 
     if csv_text:
         
+        # Read the text as a csv into a dataframe
         df = pd.read_csv(io.StringIO(csv_text))
 
         # Display data in an editable format.
@@ -41,9 +42,9 @@ As we are running on a sandbox environment, uploading a file isn't ideal, so ins
 
 Now we need to define the `add_to_database()` function. This function needs to:
 
-    - Check if the dataframe matches the require schema
-    - Get a list of ProductId values currently in the database
-    - Split the new dataframe into existing products and new products
+- Check if the dataframe matches the require schema
+- Get a list of ProductId values currently in the database
+- Split the new dataframe into existing products and new products
     - Add the stock to the existing product rows in the coffeeco.Inventory table
     - Add the new products to the coffeeco.Inventory table
 
@@ -76,3 +77,12 @@ ProductId,Name,Description,CountryOfOrigin,Price,StockQuantity
 Oh no! Theres a value missing - the supplier has missed the CountryOfOrigin for the Brazillian Classic. Luckily we made this table editable, so double click the empty box and add in a suitable value. Feel free to change some other values here if you'd like as well
 
 When you've done this, click "Add to Database". You'll see the page refresh and hopefully the changes will appear in the stock table displayed.
+
+## Solution
+
+Add the following rows to line :
+
+```python
+            insert_list = new_products_df.values.tolist() 
+            cursor.executemany(insert_query, insert_list)
+```
