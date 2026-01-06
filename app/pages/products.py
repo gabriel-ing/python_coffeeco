@@ -102,7 +102,6 @@ cursor = conn.cursor()
 cursor.execute("SELECT ID from coffeeco.Inventory")
 ids = cursor.fetchall()
 ids = [x[0] for x in ids]
-print(ids, "Ids") 
 cursor.close()
 
 ## Create IRIS native connection

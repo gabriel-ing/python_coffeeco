@@ -95,3 +95,4 @@ rows = cursor.fetchall()
 # print the values
 print(rows)
 ```
+
